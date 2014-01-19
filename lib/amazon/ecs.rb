@@ -27,6 +27,7 @@ require 'cgi'
 require 'hmac-sha2'
 require 'base64'
 require 'openssl'
+require 'json'
 
 module Amazon
   class RequestError < StandardError; end
@@ -126,6 +127,7 @@ module Amazon
       log "Request URL: #{request_url}"
       
       res = Net::HTTP.get_response(URI::parse(request_url))
+      # puts Hash.from_xml( res ).to_json.inspect
       unless res.kind_of? Net::HTTPSuccess
         raise Amazon::RequestError, "HTTP Response: #{res.code} #{res.message}"
       end
@@ -143,14 +145,20 @@ module Amazon
       def initialize(xml)
         @doc = Nokogiri::XML(xml, nil, 'UTF-8')
         @doc.remove_namespaces!
+        # @hash = Hash.from_libxml(xml)
         # @doc.xpath("//*").each { |elem| elem.name = elem.name.downcase }
         # @doc.xpath("//@*").each { |att| att.name = att.name.downcase }
+        # @debug = true
       end
 
       # Return Nokogiri::XML::Document object.
       def doc
         @doc
       end
+
+      # def hash
+      #   @hash
+      # end
 
       # Return true if request is valid.
       def is_valid_request?
@@ -225,6 +233,8 @@ module Amazon
         request_url = SERVICE_URLS[country.to_sym]
         raise Amazon::RequestError, "Invalid country '#{country}'" unless request_url
 
+        # puts opts[:AWS_secret_key]
+
         secret_key = opts.delete(:AWS_secret_key)
         request_host = URI.parse(request_url).host
         
@@ -249,10 +259,10 @@ module Amazon
         end
         
         signature = ''
-        unless secret_key.nil?
+        # unless secret_key.nil?
           request_to_sign="GET\n#{request_host}\n/onca/xml\n#{qs}"
-          signature = "&Signature=#{sign_request(request_to_sign, secret_key)}"
-        end
+          signature = "&Signature=#{sign_request(request_to_sign, '97X1s1Uy/97bFCucrpX8D4y0c+oDXmkF7afb+w4v')}"
+        # end
 
         "#{request_url}?#{qs}#{signature}"
       end
@@ -385,4 +395,5 @@ module Amazon
       elem.to_s if elem
     end
   end
+
 end
