@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
-require './lib/amazon/ecs'
+# require './lib/amazon/ecs'
 
 Gem::Specification.new do |gem|
   gem.name = %q{amazon-ecs}
-  gem.version = Amazon::Ecs::VERSION
+  gem.version = '2.2.4'
   gem.platform = Gem::Platform::RUBY
   gem.authors = ["Herryanto Siatono"]
   gem.email = %q{herryanto@gmail.com}
